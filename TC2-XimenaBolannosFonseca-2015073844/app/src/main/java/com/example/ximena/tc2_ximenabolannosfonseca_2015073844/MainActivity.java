@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
     public void moveDown(View view){
         if(positions.size()!=0){
 
-            if(positions.get(0)/15<15&&positions.get(1)/15<15&& positions.get(2)/15<15&&positions.get(3)/15<15&&colision(positions.get(0)+15,positions.get(1)+15, positions.get(2)+15, positions.get(3)+15)){
+            if(positions.get(0)/15<16&&positions.get(1)/15<16&& positions.get(2)/15<16&&positions.get(3)/16<15&&colision(positions.get(0)+15,positions.get(1)+15, positions.get(2)+15, positions.get(3)+15)){
 
                 setMatriz(positions.get(0),positions.get(1),positions.get(2),positions.get(3),-1);
 
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(values.get(i));
             System.out.println(positions.toString());
             if (!positions.contains(values.get(i))) {
-                if (matriz[(values.get(i)) / 15][(values.get(i)) % 15] != -1||values.get(i)/15==16) {
+                if (matriz[(values.get(i)) / 15][(values.get(i)) % 15] != -1||values.get(i)/15==17) {
                     return false;
                 }
             }
