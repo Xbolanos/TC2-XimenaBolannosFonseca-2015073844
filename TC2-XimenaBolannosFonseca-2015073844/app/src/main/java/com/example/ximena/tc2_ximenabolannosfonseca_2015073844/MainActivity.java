@@ -2,6 +2,7 @@ package com.example.ximena.tc2_ximenabolannosfonseca_2015073844;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -9,8 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -31,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private  int position=0;
     private  int score=0;
     private  boolean gameover=false;
-
+    private RelativeLayout rlGO;
+    private MediaPlayer mPlayer;
     public void initialState(){
         GridLayout gridLayout=findViewById(R.id.gridLayout);
         for(int i=0;i<gridLayout.getChildCount();i++) {
@@ -43,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
                 matriz[i][j]=-1;
             }
         }
+    }
+
+    public void goBack(View view){
+        super.onBackPressed();
     }
     public List<ImageView> getRandomFigure(int position, GridLayout gridLayout){
 
@@ -151,6 +159,19 @@ public class MainActivity extends AppCompatActivity {
 
                 typefigure = rand;
                 position = 0;
+            }
+            else{
+                Button bl=findViewById(R.id.btnleft);
+                Button br=findViewById(R.id.btnright);
+                Button bt=findViewById(R.id.btnturn);
+                Button bd=findViewById(R.id.btndown);
+                bl.setEnabled(false);
+                br.setEnabled(false);
+                bt.setEnabled(false);
+                bd.setEnabled(false);
+                mPlayer.stop();
+                rlGO.setAlpha(.9f);
+                rlGO.setVisibility(View.VISIBLE);
             }
             return list;
 
@@ -333,18 +354,18 @@ public class MainActivity extends AppCompatActivity {
         int pos3;
         switch(position) {
             case 0:
-                pos=positions.get(2)-15;
-                pos1=positions.get(2)-16;
+                pos=positions.get(2)-16;
+                pos1=positions.get(2)-17;
                 pos2=positions.get(2);
-                pos3=positions.get(2)+1;
+                pos3=positions.get(2)-1;
                 position=1;
 
                 break;
             default:
-                pos=positions.get(2)-14;
-                pos1=positions.get(2);
-                pos2=positions.get(2)+1;
-                pos3=positions.get(2)+15;
+                pos=positions.get(2)-15;
+                pos1=positions.get(2)-1;
+                pos2=positions.get(2);
+                pos3=positions.get(2)+14;
                 position=0;
                 break;
 
@@ -437,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
         switch(position) {
             case 0:
                 pos=positions.get(2)-15;
-                pos1=positions.get(2)-16;
+                pos1=positions.get(2)-14;
                 pos2=positions.get(2);
                 pos3=positions.get(2)+15;
 
@@ -463,10 +484,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             default:
-                pos=positions.get(2)-15;
-                pos1=positions.get(2)+1;
+                pos=positions.get(2)-16;
+                pos1=positions.get(2)-1;
                 pos2=positions.get(2);
-                pos3=positions.get(2)+2;
+                pos3=positions.get(2)+1;
                 position=0;
                 break;
 
@@ -655,7 +676,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initialState();
-        MediaPlayer mPlayer = MediaPlayer.create(MainActivity.this,R.raw.ritari);
+        rlGO=findViewById(R.id.rlGameOver);
+        rlGO.setVisibility(View.INVISIBLE);
+        mPlayer = MediaPlayer.create(MainActivity.this,R.raw.ritari);
         mPlayer.setVolume(0,100);
         mPlayer.setLooping(true);
         mPlayer.start();

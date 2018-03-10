@@ -14,7 +14,7 @@
 
         <Button
             android:id="@+id/btnStart"
-            android:layout_width="148dp"
+            android:layout_width="200dp"
             android:layout_height="88dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
