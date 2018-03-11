@@ -1,14 +1,10 @@
 package com.example.ximena.tc2_ximenabolannosfonseca_2015073844;
 
 
-import android.content.Context;
-import android.content.Intent;
-import android.media.AudioManager;
+
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -16,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,11 +48,11 @@ public class MainActivity extends AppCompatActivity {
     public void goBack(View view){
         super.onBackPressed();
     }
-    public List<ImageView> getRandomFigure(int position, GridLayout gridLayout){
+    public synchronized List<ImageView> getRandomFigure(int position, GridLayout gridLayout){
 
 
             int rand = (int) (Math.random() * 7);
-
+            //int rand=1;
             ImageView imview;
             ImageView imview1;
             ImageView imview2;
@@ -178,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void moveDown(View view){
+    public synchronized void moveDown(View view){
         if(positions.size()!=0){
 
             if(positions.get(0)/15<16&&positions.get(1)/15<16&& positions.get(2)/15<16&&positions.get(3)/16<15&&colision(positions.get(0)+15,positions.get(1)+15, positions.get(2)+15, positions.get(3)+15)){
@@ -213,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    public void moveRight(View view){
+    public synchronized void moveRight(View view){
         if(positions.size()!=0) {
             if (positions.get(0) % 15 < 14 && positions.get(1) % 15 < 14 && positions.get(2) % 15 < 14 && positions.get(3) % 15 < 14 && colision(positions.get(0) + 1, positions.get(1) + 1, positions.get(2) + 1, positions.get(3) + 1)) {
                 setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
@@ -237,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    public void moveLeft(View view){
+    public synchronized void moveLeft(View view){
         if(positions.size()!=0) {
             if (positions.get(0) % 15 > 0 && positions.get(1) % 15 > 0 && positions.get(2) % 15 > 0 && positions.get(3) % 15 > 0 && colision(positions.get(0) - 1, positions.get(1) - 1, positions.get(2) - 1, positions.get(3) - 1)) {
                 setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
@@ -261,12 +257,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    public boolean colision(int pos,int pos1, int pos2, int pos3){
+    public synchronized boolean colision(int pos,int pos1, int pos2, int pos3){
         ArrayList<Integer> values=new ArrayList<>(asList(pos,pos1,pos2,pos3));
 
         for(int i=0;i<4;i++) {
-            System.out.println(values.get(i));
-            System.out.println(positions.toString());
+
             if (!positions.contains(values.get(i))) {
                 if (matriz[(values.get(i)) / 15][(values.get(i)) % 15] != -1||values.get(i)/15==17) {
                     return false;
@@ -278,34 +273,34 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void turn(View view){
+    public synchronized void turn(View view){
         if(positions.size()!=0) {
 
             switch (typefigure) {
                 case 0:
                     break;
                 case 1:
-                    setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+
                     turnI();
                     break;
                 case 2:
-                    setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+
                     turnL();
                     break;
                 case 3:
-                    setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+
                     turnT();
                     break;
                 case 4:
-                    setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+
                     turnZInvert();
                     break;
                 case 5:
-                    setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+
                     turnZ();
                     break;
                 default:
-                    setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+
                     turnLInvertida();
                     break;
 
@@ -328,6 +323,13 @@ public class MainActivity extends AppCompatActivity {
                     pos2 = positions.get(2);
                     pos3 = positions.get(2) + 1;
                     position = 1;
+                    if(pos/15!=pos3/15){
+                        pos = positions.get(0);
+                        pos1 = positions.get(1);
+                        pos2 = positions.get(2);
+                        pos3 = positions.get(3);
+                        position=0;
+                    }
 
                 break;
             default:
@@ -340,7 +342,21 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        if(pos>254||pos1>254||pos2>254||pos3>254){
+            pos = positions.get(0);
+            pos1 = positions.get(1);
+            pos2 = positions.get(2);
+            pos3 = positions.get(3);
+            if(position!=0){
+                position-=1;
+            }else{
+                position=1;
+            }
+        }
+        if(colision(pos,pos1,pos2,pos3)){
+            setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
             rePosition(pos, pos1, pos2, pos3);
+        }
 
 
 
@@ -359,7 +375,13 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(2);
                 pos3=positions.get(2)-1;
                 position=1;
-
+                if(pos/15!=pos1/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=0;
+                }
                 break;
             default:
                 pos=positions.get(2)-15;
@@ -370,11 +392,26 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
         }
-        rePosition(pos,pos1,pos2,pos3);
+        if(pos>254||pos1>254||pos2>254||pos3>254){
+            pos = positions.get(0);
+            pos1 = positions.get(1);
+            pos2 = positions.get(2);
+            pos3 = positions.get(3);
+            if(position!=0){
+                position-=1;
+            }else{
+                position=1;
+            }
+        }
+        if(colision(pos,pos1,pos2,pos3)){
+            setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+            rePosition(pos, pos1, pos2, pos3);
+        }
+
+
 
 
     }
-
     public void turnZInvert(){
 
 
@@ -389,7 +426,13 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(2)-1;
                 pos3=positions.get(2);
                 position=1;
-
+                if(pos/15!=pos1/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=0;
+                }
                 break;
             default:
                 pos=positions.get(2)-15;
@@ -400,7 +443,24 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
         }
-        rePosition(pos,pos1,pos2,pos3);
+        if(pos>254||pos1>254||pos2>254||pos3>254){
+            pos = positions.get(0);
+            pos1 = positions.get(1);
+            pos2 = positions.get(2);
+            pos3 = positions.get(3);
+            if(position!=0){
+                position-=1;
+            }else{
+                position=1;
+            }
+        }
+        if(colision(pos,pos1,pos2,pos3)){
+            setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+            rePosition(pos, pos1, pos2, pos3);
+
+        }
+
+
 
 
     }
@@ -426,6 +486,13 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(3)+1;
                 pos3=positions.get(3);
                 position=2;
+                if(pos/15!=pos2/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=1;
+                }
                 break;
             case 2:
                 pos=positions.get(3)-15;
@@ -441,10 +508,33 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(3)+15;
                 pos3=positions.get(3);
                 position=0;
+                if(pos/15!=pos1/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=3;
+                }
                 break;
 
         }
-        rePosition(pos,pos1,pos2,pos3);
+        if(pos>254||pos1>254||pos2>254||pos3>254){
+            pos = positions.get(0);
+            pos1 = positions.get(1);
+            pos2 = positions.get(2);
+            pos3 = positions.get(3);
+            if(position!=0){
+                position-=1;
+            }else{
+                position=3;
+            }
+        }
+        if(colision(pos,pos1,pos2,pos3)){
+            setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+            rePosition(pos, pos1, pos2, pos3);
+        }
+
+
 
 
     }
@@ -472,8 +562,16 @@ public class MainActivity extends AppCompatActivity {
                 pos1=positions.get(2)+1;
                 pos2=positions.get(2);
                 pos3=positions.get(2)+16;
-
                 position=2;
+                if(pos/15!=pos2/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=1;
+                }
+
+
                 break;
             case 2:
                 pos=positions.get(2)-15;
@@ -481,6 +579,7 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(2);
                 pos3=positions.get(2)+15;
                 position=3;
+
                 break;
 
             default:
@@ -489,10 +588,34 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(2);
                 pos3=positions.get(2)+1;
                 position=0;
+                if(pos1/15!=pos3/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=2;
+                }
+
                 break;
 
         }
-        rePosition(pos,pos1,pos2,pos3);
+        if(pos>254||pos1>254||pos2>254||pos3>254){
+            pos = positions.get(0);
+            pos1 = positions.get(1);
+            pos2 = positions.get(2);
+            pos3 = positions.get(3);
+            if(position!=0){
+                position-=1;
+            }else{
+                position=3;
+            }
+        }
+        if(colision(pos,pos1,pos2,pos3)){
+            setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+            rePosition(pos, pos1, pos2, pos3);
+        }
+
+
 
 
     }
@@ -508,6 +631,13 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(2);
                 pos3=positions.get(2)+1;
                 position=1;
+                if(pos1/15!=pos3/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=0;
+                }
                 break;
             case 1:
                 pos=positions.get(2)-15;
@@ -522,6 +652,13 @@ public class MainActivity extends AppCompatActivity {
                 pos2=positions.get(2);
                 pos3=positions.get(2)+14;
                 position=3;
+                if(pos/15!=pos1/15){
+                    pos = positions.get(0);
+                    pos1 = positions.get(1);
+                    pos2 = positions.get(2);
+                    pos3 = positions.get(3);
+                    position=2;
+                }
                 break;
 
             default:
@@ -533,7 +670,23 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
         }
-        rePosition(pos,pos1,pos2,pos3);
+        if(pos>254||pos1>254||pos2>254||pos3>254){
+            pos = positions.get(0);
+            pos1 = positions.get(1);
+            pos2 = positions.get(2);
+            pos3 = positions.get(3);
+            if(position!=0){
+                position-=1;
+            }else{
+                position=3;
+            }
+        }
+
+        if(colision(pos,pos1,pos2,pos3)){
+            setMatriz(positions.get(0), positions.get(1), positions.get(2), positions.get(3), -1);
+            rePosition(pos, pos1, pos2, pos3);
+        }
+
 
 
     }
@@ -558,6 +711,8 @@ public class MainActivity extends AppCompatActivity {
             imv2 = (ImageView) gridLayout.getChildAt(pos2);
             imv3 = (ImageView) gridLayout.getChildAt(pos3);
 
+
+
             imv.setImageResource(colorf);
             imv1.setImageResource(colorf);
             imv2.setImageResource(colorf);
@@ -572,8 +727,10 @@ public class MainActivity extends AppCompatActivity {
             positions.set(1, pos1);
             positions.set(2, pos2);
             positions.set(3, pos3);
-
             setMatriz(pos, pos1, pos2, pos3, typefigure);
+            printMatriz();
+
+
 
 
 
@@ -624,8 +781,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void checkRow(ArrayList<Integer> posts){
         for(int i=0; i< posts.size();i++){
-            Log.d("fila", String.valueOf(posts.get(i)/15));
-            Log.d("fullrow:", String.valueOf(fullRow(posts.get(i)/15)));
+
             if (fullRow(posts.get(i)/15)) {
 
                 deleteRow(posts.get(i)/15);
@@ -648,15 +804,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteRow(int row){
-        Log.d("delete row:", "entre");
+
         GridLayout gridLayout=findViewById(R.id.gridLayout);
         for(int i=0; i< matriz[row].length;i++){
-            System.out.println("Row:"+row);
-            System.out.println("Primera:"+matriz[row][i]);
+
             matriz[row][i]=-1;
-            System.out.println("Segunda:"+matriz[row][i]);
+
             printMatriz();
-            Log.d("position Grid:", String.valueOf(row*15+i));
+
             ImageView imv = (ImageView) gridLayout.getChildAt(row*15+i);
             imv.setImageResource(R.drawable.tg);
         }
